@@ -13,11 +13,11 @@ void func(int clifd){
         bzero(buff,MAX);
         int bytes=recv(clifd,buff,sizeof(buff),0);
         if(bytes<=0){
-            printf("error occured while recieveing!!");
+            printf("error occured while recieveing!!\n");
             break;
         }
-        printf("From client:%s",buff);
-        send(clifd,buff,sizeof(buff),0);
+        printf("\nFrom client:%s",buff);
+        send(clifd,buff,strlen(buff),0);
         if(!strncmp("exit",buff,4)){
             printf("Server exit");
             break;
@@ -41,30 +41,30 @@ int main(){
     
     serveraddr.sin_family=AF_INET;
     serveraddr.sin_addr.s_addr=htonl(INADDR_ANY);
-    serveraddr.sin_port=htonl(PORT);
+    serveraddr.sin_port=htons(PORT);
 
     if((bind(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr)))==0){
-        printf("Socket is binded sucessfullt to the address!!");
+        printf("Socket is binded sucessfullt to the address!!\n");
     }
     else{
-        printf("Binding of socket failed!!");
+        printf("Binding of socket failed!!\n");
         exit(0);
     }
 
     if(listen(sockfd,3)!=-1){
-        printf("Server is now listening!!");
+        printf("Server is now listening!!\n");
     }
     else{
-        printf("Listening failed!!");
+        printf("Listening failed!!\n");
         exit(0);
     }
     len=sizeof(cliaddr);
     clifd=accept(sockfd,(struct sockaddr*)&cliaddr,&len);
     if(clifd!=-1){
-        printf("aceptig the clinet is sucessful!!");
+        printf("aceptig the clinet is sucessful!!\n");
     }
     else{
-        printf("aceept() failed!!");
+        printf("aceept() failed!!\n");
     }
     func(clifd);
     close(sockfd);
