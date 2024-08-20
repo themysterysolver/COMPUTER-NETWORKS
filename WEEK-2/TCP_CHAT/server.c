@@ -11,7 +11,20 @@ void func(int clifd){
     int n;
     while(1){
         bzero(buff,MAX);
-        int bytes=recv(clifd,struct serveradd(cliaddr),0)
+        int bytes=recv(clifd,buff,strlen(buff),0);
+        if(bytes<=0){
+            printf("erroroccured while recieving!!\n");
+            break;
+        }
+        printf("FROM CLIENT:%s",buff);
+        bzero(buff,MAX);
+        printf("TO CLIENT:");
+        while((buff[n++]=getchar())!='\n');
+        send(clifd,buff,strlen(buff),0);
+        if(!strcmp(buff,"exit")){
+            printf("server exited the chat!!");
+            break;
+        }
     }
 }
 
@@ -29,8 +42,8 @@ int main(){
     bzero(&serveraddr,sizeof(serveraddr));
     serveraddr.sin_family=AF_INET;
     serveraddr.sin_addr.s_addr=htonl(INADDR_ANY);
-    serveradd.sin_port=htonl(PORT);
-    if(bind(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr))){
+    serveraddr.sin_port=htonl(PORT);
+    if(bind(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr))!=-1){
         printf("Socket is binded sucessfully!!\n");
     }
     else{
@@ -52,6 +65,6 @@ int main(){
     else{
         printf("unable to accept!accept() failed\n");
     }
-    funct(clifd);
-    clsoe(sockfd);
+    func(clifd);
+    close(sockfd);
 }
