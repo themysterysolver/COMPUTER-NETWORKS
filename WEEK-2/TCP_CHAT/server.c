@@ -8,21 +8,27 @@
 #define MAX 100
 void func(int clifd){
     char buff[MAX];
-    int n;
+    int n=0;
     while(1){
+        n=0;
         bzero(buff,MAX);
-        int bytes=recv(clifd,buff,strlen(buff),0);
+        int bytes=recv(clifd,buff,MAX,0);
         if(bytes<=0){
             printf("erroroccured while recieving!!\n");
             break;
         }
-        printf("FROM CLIENT:%s",buff);
+        if(!strncmp(buff,"exit",4)){
+            printf("server exited the chat!!\n");
+            break;
+        }
+        printf("FROM CLIENT:%s\n",buff);
         bzero(buff,MAX);
         printf("TO CLIENT:");
+        n=0;
         while((buff[n++]=getchar())!='\n');
-        send(clifd,buff,strlen(buff),0);
-        if(!strcmp(buff,"exit")){
-            printf("server exited the chat!!");
+        send(clifd,buff,MAX,0);
+        if(!strncmp(buff,"exit",4)){
+            printf("client exited the chat!!");
             break;
         }
     }
@@ -42,7 +48,7 @@ int main(){
     bzero(&serveraddr,sizeof(serveraddr));
     serveraddr.sin_family=AF_INET;
     serveraddr.sin_addr.s_addr=htonl(INADDR_ANY);
-    serveraddr.sin_port=htonl(PORT);
+    serveraddr.sin_port=htons(PORT);
     if(bind(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr))!=-1){
         printf("Socket is binded sucessfully!!\n");
     }
